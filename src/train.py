@@ -2,9 +2,22 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
+import argparse
 
 from src.data import get_dataloaders
 from src.models.model import get_model
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--model",
+    type=str,
+    default="resnet18",
+    choices=["resnet18"],
+)
+
+args = parser.parse_args()
+
+model_name = args.model
 
 def train_one_epoch(model, loader, criterion, optimizer, device):
     model.train()
@@ -56,7 +69,7 @@ def evaluate(model, loader, device):
     return correct / total
 
 def main():
-    train_loader, test_loader = get_dataloaders("data/food-101/food-101")
+    train_loader, test_loader = get_dataloaders("data/food-101/food-101", model_name)
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -86,7 +99,7 @@ def main():
             "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
             "loss": train_loss,
-            },"artifacts/checkpoint.pth")
+            },f"artifacts/{model_name}_best.pth")
 
         print(f"Epoch {epoch+1} | Loss {train_loss:.4f} | Acc {val_acc:.4f}")
         print(f"Checkpoint (acc: {val_acc:.4f})")

@@ -7,5 +7,3 @@ Expected structure after download/extract:
 food-101/
 ├── images/
 └── meta/
-
-This folder is intentionally ignored by Git (dataset files are large).

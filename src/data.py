@@ -2,10 +2,6 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 from data.dataset_loader import Food101Dataset
 
-
-from torchvision import transforms
-
-
 def get_train_transform(model_name="resnet18"):
     if model_name == "resnet18":
         return transforms.Compose([
@@ -52,7 +48,7 @@ def get_datasets(data_root, model_name="resnet18"):
 
 
 def get_dataloaders(data_root, batch_size=32, model_name="resnet18"):
-    train_dataset, test_dataset = get_datasets(data_root, model_name=model_name)
+    train_dataset, test_dataset = get_datasets(data_root, model_name)
 
     train_loader = DataLoader(
         train_dataset,

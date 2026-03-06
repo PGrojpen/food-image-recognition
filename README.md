@@ -23,10 +23,16 @@ The project will compare:
 ## Project Structure
 
 ```
-data/       dataset (not tracked by Git)
-src/        source code
-outputs/    trained models and results
-main.py     project entry point
+artifacts/
+data/
+scripts/
+src/
+tests/
+predict.py
+requirements.txt
+README.md
+LICENSE
+.gitignore
 ```
 
 ## Tools

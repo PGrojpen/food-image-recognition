@@ -18,7 +18,7 @@ The project will compare:
 
 * A baseline CNN implemented from scratch
 * ResNet18 using transfer learning
-* EfficientNet using transfer learning
+* EfficientNet** using transfer learning
 
 ## Project Structure
 

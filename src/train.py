@@ -3,22 +3,32 @@ import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
 import argparse
+import json
+import os
 
+from datetime import datetime
 from src.data import get_dataloaders
 from src.models.model import get_model
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+    description="Train a food image classification model"
+)
 parser.add_argument(
     "--model",
     type=str,
     default="resnet18",
     choices=["resnet18"],
 )
+parser.add_argument(
+    "--batch_size",
+    type=int,
+    default="32",
+)
 
 args = parser.parse_args()
 
 model_name = args.model
-
+batch_size = args.batch_size
 def train_one_epoch(model, loader, criterion, optimizer, device):
     model.train()
 
@@ -69,18 +79,32 @@ def evaluate(model, loader, device):
     return correct / total
 
 def main():
-    train_loader, test_loader = get_dataloaders("data/food-101/food-101", model_name)
+    train_loader, test_loader = get_dataloaders("data/food-101/food-101", batch_size, model_name)
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = get_model().to(device)
+    model = get_model(model_name=model_name).to(device)
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
     epochs = 3
 
-    best_acc = 0.0
+    checkpoint_path = f"artifacts/checkpoints/{model_name}_best.pth"
+    if os.path.exists(checkpoint_path):
+        best_global = torch.load(checkpoint_path, map_location="cpu")
+        best_global_acc = best_global["val_acc"]
+    else:
+        best_global_acc = 0.0
+
+    metrics = []
+
+    experiment = {
+    "model": model_name,
+    "epochs": epochs,
+    "batch_size": batch_size,
+    "metrics": metrics
+}
 
     for epoch in range(epochs):
 
@@ -91,19 +115,34 @@ def main():
         val_acc = evaluate(
             model, test_loader, device
         )
-        if val_acc > best_acc:
-            best_acc = val_acc
+
+        metrics.append({
+            "epoch": epoch + 1,
+            "train_loss": train_loss,
+            "val_acc": val_acc
+        })
+
+        if val_acc > best_global_acc:
+            best_global_acc = val_acc
 
             torch.save({
             "epoch": epoch,
             "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
             "loss": train_loss,
-            },f"artifacts/{model_name}_best.pth")
+            },f"artifacts/checkpoints/{model_name}_best.pth")
 
         print(f"Epoch {epoch+1} | Loss {train_loss:.4f} | Acc {val_acc:.4f}")
         print(f"Checkpoint (acc: {val_acc:.4f})")
-        
+
+    os.makedirs("artifacts/checkpoints", exist_ok=True)
+    os.makedirs("artifacts/metrics", exist_ok=True)
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+    metrics_path = f"artifacts/metrics/{model_name}_{timestamp}.json"
+    with open(metrics_path, "w") as f:
+        json.dump(experiment, f, indent=4)
+        json.dump(metrics, f, indent=4)
 
 if __name__ == "__main__":
     main()

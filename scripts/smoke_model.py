@@ -1,5 +1,5 @@
 import torch
-from src.model import get_model
+from src.models.model import get_model
 
 model = get_model(num_classes=101)
 

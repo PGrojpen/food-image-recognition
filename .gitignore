@@ -9,6 +9,9 @@ venv/
 data/food-101/food-101
 data/food-101/*.tar.gz
 
+# Model artifacts
+artifacts/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

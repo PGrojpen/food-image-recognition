@@ -6,8 +6,8 @@ __pycache__/
 venv/
 
 # Dataset
-data/food-101/food-101
-data/food-101/*.tar.gz
+data/food-101
+data/food-101.tar.gz
 
 # Model artifacts
 artifacts/

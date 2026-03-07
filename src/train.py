@@ -8,7 +8,8 @@ import os
 
 from datetime import datetime
 from src.data import get_dataloaders
-from src.models.model import get_model
+from src.models import get_resnet_model
+from src.models import get_efficientnet_model
 
 def train_one_epoch(model, loader, criterion, optimizer, device):
     model.train()
@@ -64,11 +65,15 @@ def main(model_name, batch_size, lr, weight_decay, epochs):
     os.makedirs("artifacts/checkpoints", exist_ok=True)
     os.makedirs("artifacts/metrics", exist_ok=True)
 
-    train_loader, test_loader = get_dataloaders("data/food-101/food-101", batch_size, model_name)
+    train_loader, test_loader = get_dataloaders("data/food-101", batch_size, model_name)
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = get_model(model_name=model_name).to(device)
+    if model_name == "resnet18":
+        model = get_resnet_model().to(device)
+
+    elif model_name == "efficientnet_b0":
+        model = get_efficientnet_model().to(device)
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
@@ -133,7 +138,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
     description="Train a food image classification model"
     )
-    parser.add_argument("--model", type=str, default="resnet18", choices=["resnet18"],)
+    parser.add_argument("--model", type=str, default="resnet18", choices=["resnet18", "efficientnet_b0"])
     parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--weight_decay", type=float, default=0.0)

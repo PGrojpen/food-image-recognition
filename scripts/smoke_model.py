@@ -1,9 +1,13 @@
 import torch
-from src.models.model import get_model
+from src.models import get_resnet_model
 
-model = get_model(num_classes=101)
+def main():
+    model = get_resnet_model(num_classes=101)
 
-x = torch.randn(32, 3, 224, 224)
-out = model(x)
+    x = torch.randn(32, 3, 224, 224)
+    out = model(x)
 
-print(out.shape)
+    print(out.shape)
+
+if __name__ == "__main__":
+    main()

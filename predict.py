@@ -3,12 +3,17 @@ import torch
 from PIL import Image
 
 from src.data import get_test_transform
-from src.models.model import get_model
+from src.models import get_resnet_model
+from src.models import get_efficientnet_model
 
 
 def load_model(model_name, checkpoint_path, device):
-    model = get_model(model_name=model_name)
+    if model_name == "resnet18":
+        model = get_resnet_model(model_name=model_name)
 
+    elif model_name == "efficientnet_b0":
+        model = get_efficientnet_model(model_name=model_name)
+        
     checkpoint = torch.load(checkpoint_path, map_location=device)
     model.load_state_dict(checkpoint["model_state_dict"])
 
@@ -18,7 +23,7 @@ def load_model(model_name, checkpoint_path, device):
     return model
 
 
-def load_classes(path="data/food-101/food-101/meta/classes.txt"):
+def load_classes(path="data/food-101/meta/classes.txt"):
     with open(path, "r", encoding="utf-8") as f:
         classes = [line.strip() for line in f]
     return classes

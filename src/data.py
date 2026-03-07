@@ -3,33 +3,27 @@ from torch.utils.data import DataLoader
 from data.dataset_loader import Food101Dataset
 
 def get_train_transform(model_name="resnet18"):
-    if model_name == "resnet18":
-        return transforms.Compose([
-            transforms.Resize((256, 256)),
-            transforms.RandomCrop((224, 224)),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize(
-                mean=[0.485, 0.456, 0.406],
-                std=[0.229, 0.224, 0.225]
-            ),
-        ])
-
-    raise ValueError(f"Modelo desconhecido: {model_name}")
+     return transforms.Compose([
+        transforms.Resize((256, 256)),
+        transforms.RandomCrop((224, 224)),
+        transforms.RandomHorizontalFlip(),
+         transforms.ToTensor(),
+         transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
+        ),
+    ])
 
 
 def get_test_transform(model_name="resnet18"):
-    if model_name == "resnet18":
-        return transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize(
-                mean=[0.485, 0.456, 0.406],
-                std=[0.229, 0.224, 0.225]
-            ),
-        ])
-
-    raise ValueError(f"Modelo desconhecido: {model_name}")
+    return transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
+        ),
+    ])
 
 def get_datasets(data_root, model_name="resnet18"):
     train_dataset = Food101Dataset(

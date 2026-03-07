@@ -59,7 +59,7 @@ def evaluate(model, loader, device):
 
     return correct / total
 
-def main(model_name, batch_size, epochs):
+def main(model_name, batch_size, lr, weight_decay, epochs):
 
     os.makedirs("artifacts/checkpoints", exist_ok=True)
     os.makedirs("artifacts/metrics", exist_ok=True)
@@ -71,7 +71,7 @@ def main(model_name, batch_size, epochs):
     model = get_model(model_name=model_name).to(device)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
     checkpoint_path = f"artifacts/checkpoints/{model_name}_best.pth"
     if os.path.exists(checkpoint_path):
@@ -86,6 +86,8 @@ def main(model_name, batch_size, epochs):
     "model": model_name,
     "epochs": epochs,
     "batch_size": batch_size,
+    "learning_rate": lr,
+    "weight_decay": weight_decay,
     "metrics": metrics
 }
 
@@ -133,8 +135,10 @@ if __name__ == "__main__":
     )
     parser.add_argument("--model", type=str, default="resnet18", choices=["resnet18"],)
     parser.add_argument("--batch_size", type=int, default=64)
+    parser.add_argument("--lr", type=float, default=1e-4)
+    parser.add_argument("--weight_decay", type=float, default=0.0)
     parser.add_argument("--epochs", type=int, default=5)
 
     args = parser.parse_args()
 
-    main(args.model, args.batch_size, args.epochs)
+    main(args.model, args.batch_size, args.lr, args.weight_decay, args.epochs)
